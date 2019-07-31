@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{% block title %} Arche Solutions {% endblock %}</title>
+{% block header_css %}
+{% endblock %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+
+{% block header_js %}
+{% endblock %}
+</head>
+
+<body>
+
+<nav class="navbar navbar-light bg-light">
+  <span class="navbar-brand mb-0 h1"><h3>Arche Solutions</h3></span>
+</nav>
+
+<div class="container">
+
+{% block content %}
+
+{% endblock %}
+</div>
+
+<footer>
+<div class="row credits-row">
+<div class="offset-md-4 offset-lg-4 col-12 col-sm-12 col-md-4 col-lg-4 text-center">
+<p>Arche Solutions &#9400; Copyright 2019 <br/>
+Made with &#10084; by <a href="https://github.com/akshat0047">@akshat0047</a></p>
+</div>
+</div>
+</footer>
+{% block footer_js %}
+{% endblock %}
+</body>
+</html>

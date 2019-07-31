@@ -1,0 +1,30 @@
+{% extends "extractor/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{{ wtf.quick_form(form) }}
+{% block content %}
+
+<div class="row text-center">
+<div class="offset-2 offset-md-4 offset-lg-4 col-8 col-md-4 col-lg-4">
+<div id="arche_form">
+<form action = "http://127.0.01:5000/extract/" method = post>
+    <legend><h4>API Form</h4></legend>
+    
+    {{ form.hidden_tag() }}
+    <br/>
+
+{{ wtf.form_field(form.Extract, class='form-control', placeholder='Choose Option') }}
+
+{{ wtf.form_field(form.url, class='form-control', placeholder='https://xyz.com') }}
+<br/>
+<input id="scrape" type=submit value="Run Scraper" class='btn btn-primary btn-block'>
+
+</form>
+</div>
+</div>
+</div>
+{% endblock content %}
+
+{% block footer_js %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}
+
