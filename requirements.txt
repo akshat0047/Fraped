@@ -1,3 +1,6 @@
 flask
+Flask-Bootstrap
+flask-wtf
 scrapy
 crochet
+tldextract

@@ -1,31 +1,28 @@
 import scrapy
 from scrapy.linkextractors import LinkExtractor
-from scrapy.conf import settings
-
-# DOMAIN = 'www.americanexpress.com'
-# URL = 'http://%s' % DOMAIN
+import tldextract
 
 
-class MySpider(scrapy.Spider):
+class UrlsDSpider(scrapy.Spider):
     name = 'urlsd'
-    start_urls = [url, ]
-    custom_settings = {
-        'DEPTH_LIMIT': self.depth
-    }
-    # def __init__(self, request, *args, **kwargs):
-    #    super(MySpider, self).__init__(*args, **kwargs)
-    #    print(request)
-    # settings.overrides['DEPTH_LIMIT'] = request.meta['depth']
-    # self.dom = request.meta["download_slot"]
+    dom = ''
 
-    # allowed_domains = [request.url]
-    # start_urls = [
-    #    URL
-    # ]
+    def __init__(self, *args, **kwargs):
+        super(UrlsDSpider, self).__init__(*args, **kwargs)
+        custom_settings = {
+            'DEPTH_LIMIT': int(kwargs.get('meta')['depth'])
+        }
+        print(kwargs)
+        print(kwargs.get('meta')['url'])
+        print(kwargs.get('meta')['depth'])
+        print(type(int(kwargs.get('meta')['depth'])))
+        self.dom = tldextract.extract(kwargs.get('meta')['url'])
+        print(self.dom)
+        self.start_urls = [kwargs.get('meta')['url'], ]
 
     def parse(self, response):
-
-        le = LinkExtractor()
+        le = LinkExtractor(allow_domains=(
+            self.dom.domain + "." + self.dom.suffix,))
+        self.data_list.append(response.url)
         for link in le.extract_links(response):
-            self.data_list.append({"link": link.url})
             yield scrapy.Request(link.url, callback=self.parse)

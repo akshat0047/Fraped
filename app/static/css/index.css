@@ -14,27 +14,40 @@ a:hover {
   text-decoration: none !important;
 }
 
+#loader {
+  display: none;
+}
+#scrape {
+  position: relative;
+  top: 6px;
+}
+
 .credits-row {
   position: relative;
-  top: 50%;
-  font-size: 0.9em;
+  top: 12px;
+  font-size: 1em;
 }
 
 #arche_form {
   position: relative;
   display: block;
   border-radius: 3%;
-  padding: 10%;
-  top: 9%;
+  padding: 5%;
+  top: 8%;
   border: 2px solid white;
   color: white;
   font-size: 1.2em;
 }
 
+nav {
+  box-shadow: 0px 0px 1px 2px rgba(251, 251, 251, 0.4);
+}
+
 footer {
   position: absolute;
   width: 100%;
-  height: 100px;
+  height: 50px;
+  box-shadow: 0px 0px 2px 2px rgba(251, 251, 251, 0.4);
   background: #dcdde1 !important;
   display: block;
   bottom: 0%;

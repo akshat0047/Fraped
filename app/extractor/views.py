@@ -1,13 +1,14 @@
 from flask import Flask, render_template, request, flash, Blueprint, url_for, jsonify
 from app.extractor.forms import ApiForm
 from scrapy.crawler import CrawlerRunner
-from spiders import HeadersSpider
-import glob
+from app.extractor.spiders.headers import HeadersSpider
+from app.extractor.spiders.headersd import HeadersDSpider
+from app.extractor.spiders.urls import UrlsSpider
+from app.extractor.spiders.urlsd import UrlsDSpider
+from flask_cors import CORS
 import requests
-
-
-# Get file paths of all modules.
-modules = glob.glob('subdirectory/*.py')
+import json
+import os
 
 # Create some test data for our catalog in the form of a list of dictionaries.
 #extract = Blueprint('extract', __name__, url_prefix='/extract')
@@ -17,8 +18,11 @@ data_list = []                    # store quotes
 scrape_in_progress = False
 scrape_complete = False
 
+extractor = Blueprint('extract', __name__, url_prefix='/extract')
+CORS(extractor)
 
-def crawl_for_spiders(spidy, url, depth):
+
+def crawl_for_spiders(spidy, url, depth=0):
     """
     Scrape for quotes
     """
@@ -28,14 +32,40 @@ def crawl_for_spiders(spidy, url, depth):
     if not scrape_in_progress:
         scrape_in_progress = True
         global data_list
+        data_list = []
+        print("going to start crawler")
         # start the crawler and execute a callback when complete
         eventual = crawl_runner.crawl(
-            spidy, url=url, depth=depth, data_list=data_list)
+            spidy, meta={"url": url, "depth": depth}, data_list=data_list)
         eventual.addCallback(finished_scrape)
-    #    return 'SCRAPING'
-    # elif scrape_complete:
-    #    return 'SCRAPE COMPLETE'
-    # return 'SCRAPE IN PROGRESS'
+        return {'statusajax': 'scraping'}
+    elif scrape_complete:
+        return {'statusajax': 'scrape complete'}
+    return {'statusajax': 'scrape in progress'}
+
+
+@extractor.route('/results', methods=['POST'])
+def get_results():
+    """
+    Get the results only if a spider has results
+    """
+    global scrape_in_progress
+    global scrape_complete
+    if scrape_complete:
+        return {"res": "finished"}
+    return 'Scrape Still Progress'
+
+
+@extractor.route('/show_results', methods=['POST'])
+def show_results():
+    """
+    Get the results only if a spider has results
+    """
+    global scrape_in_progress
+    global scrape_complete
+    if scrape_complete:
+        return {"Scraped": data_list}
+    return 'Try Again...'
 
 
 def finished_scrape(null):
@@ -45,36 +75,39 @@ def finished_scrape(null):
     """
     global scrape_complete
     scrape_complete = True
-    if scrape_complete:
-        return json.dumps(data_list)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@extractor.route('/', methods=['GET', 'POST'])
 def home():
+    global scrape_in_progress
+    global scrape_complete
 
     form = ApiForm(request.form)
     if request.method == 'POST':
+        scrape_in_progress = False
+        scrape_complete = False
         print("true")
         link = request.form['url']
         print(link)
         choice = request.form['Extract']
-        depth = request.for['Depth']
         print(choice)
         if choice == 'sp':
-            return crawl_for_spiders("headers", link, depth)
+            return crawl_for_spiders(HeadersSpider, link)
         if choice == 'dh':
-            return crawl_for_spiders("headersd", link, depth)
+            depth = request.form['Depth']
+            return crawl_for_spiders(HeadersDSpider, link, depth)
         if choice == 'lop':
-            return crawl_for_spiders("urls", link, depth)
+            return crawl_for_spiders(UrlsSpider, link)
         if choice == 'lopd':
-            return crawl_for_spiders("urlsd", link, depth)
+            depth = request.form['Depth']
+            return crawl_for_spiders(UrlsDSpider, link, depth)
 
     elif request.method == 'GET':
         print("here")
         return render_template('extractor/index.html', form=form)
 
 
-@app.after_request
+@extractor.after_request
 def add_header(r):
     """
     Add headers to both force latest IE rendering engine or Chrome Frame,
@@ -85,12 +118,3 @@ def add_header(r):
     r.headers["Expires"] = "0"
     r.headers['Cache-Control'] = 'public, max-age=0'
     return r
-
-
-@app.route('/', methods=['GET', 'POST'])
-def api_view():
-    html = "<h2>Welcome to API</h2>" + "<ul>" + "<li>Links On a Page '/api/v1/links?url=your_url'</li>" + "<li>Links On a Page '/api/v1/links?url=your_url'</li>" + "<li>Links On a Domain '/api/v1/domain_links?url=your_url'</li>" + \
-        "<li>Headers On a Page '/api/v1/page?url=your_url'</li>" + "<li>Headers on First Children '/api/v1/first_children_headers?url=your_url'</li>" + \
-        "<li>Headers on First Children '/api/v1/domain_headers?url=your_url'</li>"
-
-    return html

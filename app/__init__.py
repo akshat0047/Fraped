@@ -1,29 +1,14 @@
 from flask import Flask
-from app.extractor.views import extract, api
 from flask_bootstrap import Bootstrap
-from celery import Celery
 import config
 import os
-
-
-def make_celery(app):
-    celery = Celery(app.import_name, broker=config.CELERY_BROKER)
-    celery.conf.update(app.config)
-    TaskBase = celery.Task
-
-    class ContextTask(TaskBase):
-        abstract = True
-
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return TaskBase.__call__(self, *args, **kwargs)
-    celery.Task = ContextTask
-
-    return celery
+from app.extractor.views import extractor
 
 # Import SQLAlchemy
 #from flask.ext.sqlalchemy import SQLAlchemy
 
+import crochet
+crochet.setup()     # initialize crochet
 
 # Define the WSGI application object
 app = Flask(__name__)
@@ -31,7 +16,7 @@ bootstrap = Bootstrap(app)
 
 # Configurations
 app.config.from_object('config')
-
+print("init run")
 # Define the database object which is imported
 # by modules and controllers
 #db = SQLAlchemy(app)
@@ -44,11 +29,7 @@ app.config.from_object('config')
 # Import a module / component using its blueprint handler variable (mod_auth)
 
 # Register blueprint(s)
-
-app.register_blueprint(extract)
-app.register_blueprint(api)
-
-# app.register_blueprint(xyz_module)
+app.register_blueprint(extractor)
 # ..
 
 # Build the database:
@@ -56,4 +37,4 @@ app.register_blueprint(api)
 # db.create_all()
 
 # create celery object
-celery = make_celery(app)
+#celery = make_celery(app)

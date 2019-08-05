@@ -6,18 +6,29 @@
 <div class="row text-center">
 <div class="offset-2 offset-md-4 offset-lg-4 col-8 col-md-4 col-lg-4">
 <div id="arche_form">
-<form action = "http://127.0.01:5000/extract/" method = post>
-    <legend><h4>API Form</h4></legend>
+<form id="scrapef" action = "http://127.0.01:9000/extract/" method ="POST">
+    <legend><h4>Frape Here !</h4></legend>
     
     {{ form.hidden_tag() }}
     <br/>
 
-{{ wtf.form_field(form.Extract, class='form-control', placeholder='Choose Option') }}
 
 {{ wtf.form_field(form.url, class='form-control', placeholder='https://xyz.com') }}
+
+{{ wtf.form_field(form.Extract, class='form-control', placeholder='Choose Option') }}
+
+{{ wtf.form_field(form.Depth, class='form-control', placeholder='Choose Depth from 0-233') }}
+
 <br/>
+<div id="loader">
+<div class="spinner-border text-primary" role="status">
+</div><br/>
+<span class="loader-text">Scraping</span>
+</div>
 <input id="scrape" type=submit value="Run Scraper" class='btn btn-primary btn-block'>
 
+</form>
+<form id="show_results" action="http://127.0.0.1:9000/extract/show_results" method="POST">
 </form>
 </div>
 </div>

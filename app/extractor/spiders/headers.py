@@ -5,12 +5,20 @@ import logging
 
 class HeadersSpider(scrapy.Spider):
     name = 'headers'
-    start_urls = [self.url, ]
-    custom_settings = {
-        'DEPTH_LIMIT': self.depth
-    }
+
+    def __init__(self, *args, **kwargs):
+        super(HeadersSpider, self).__init__(*args, **kwargs)
+        print(kwargs)
+        print(kwargs.get('meta')['url'])
+        print(kwargs.get('meta')['depth'])
+
+        self.start_urls = [kwargs.get('meta')['url']]
+        custom_settings = {
+            'DEPTH_LIMIT': kwargs.get('meta')['depth']
+        }
 
     def parse(self, response):
+        print("run parse")
         h1 = response.xpath('//h1/text()').extract()
         h2 = response.xpath('//h2/text()').extract()
         h3 = response.xpath('//h3/text()').extract()
@@ -24,5 +32,6 @@ class HeadersSpider(scrapy.Spider):
             if type(x) is not str:
                 for i in range(0, len(x)):
                     x[i] = x[i].strip()
-
+        print(data)
         self.data_list.append(data)
+        print(data_list)

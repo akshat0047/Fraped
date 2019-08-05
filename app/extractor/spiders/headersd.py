@@ -1,17 +1,27 @@
 import scrapy
 from scrapy.linkextractors import LinkExtractor
+import tldextract
 
 # DOMAIN = 'www.americanexpress.com'
 # URL = 'http://%s' % DOMAIN
 # header_list = []
 
 
-class MySpider(scrapy.Spider):
+class HeadersDSpider(scrapy.Spider):
     name = 'headersd'
-    start_urls = [self.url]
-    custom_settings = {
-        'DEPTH_LIMIT': self.depth
-    }
+    dom = ''
+
+    def __init__(self, *args, **kwargs):
+        super(HeadersDSpider, self).__init__(*args, **kwargs)
+        print(kwargs)
+        print(kwargs.get('meta')['url'])
+        print(kwargs.get('meta')['depth'])
+        self.dom = tldextract.extract(kwargs.get('meta')['url'])
+        self.start_urls = [kwargs.get('meta')['url']]
+
+        custom_settings = {
+            'DEPTH_LIMIT': kwargs.get('meta')['depth']
+        }
 
     def parse(self, response):
         # empty for getting everything, check different options on documentation
@@ -31,7 +41,8 @@ class MySpider(scrapy.Spider):
 
         self.data_list.append(data)
 
-        le = LinkExtractor()
+        le = LinkExtractor(allow_domains=(
+            self.dom.domain + "." + self.dom.suffix,), unique=True, deny="#+")
         for link in le.extract_links(response):
 
             yield scrapy.Request(link.url, callback=self.parse)

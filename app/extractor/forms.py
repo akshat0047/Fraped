@@ -1,17 +1,14 @@
 from flask_wtf import Form
-from wtforms import SelectField, TextField, SubmitField
+from wtforms import SelectField, TextField, IntegerField, SubmitField, validators
 
 
 class ApiForm(Form):
     url = TextField("Enter URL")
     Extract = SelectField(
         'Extract',
-        choices=[('lop', 'Links on a page'), ('lopd', 'Links on a Domain'),
-                 ('sp', 'Headers on a Single Page'), ('dh',  'Headers On a domain')]
+        choices=[('sp', 'Headers on a Single Page'), ('dh',  'Headers On a domain'),
+                 ('lop', 'Links on a page'), ('lopd', 'Links on a Domain')]
     )
-    Depth = SelectField(
-        'Depth',
-        choices=[('1', '1'), ('2', '2'),
-                 ('3', '3'), ('4',  '4'), ('5',  '5'), ('0',  '0 ')]
-    )
+    Depth = IntegerField('Depth', [validators.NumberRange(min=0, max=233)])
+
     submit = SubmitField("Submit")
