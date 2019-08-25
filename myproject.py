@@ -1,4 +1,3 @@
-from flask import Flask
 from app import app
 """
 If Twisted's WSGI server is not desired in favor for solutions like uwsgi or gunicorn or anything similar,
@@ -17,6 +16,7 @@ Gunicorn usage:
 # def greeting(name='World'):
 #    return 'Hello %s!' % (name)
 
-
-#if __name__ == '__main__':
-app.run('0.0.0.0', 9000)
+if __name__ == "__main__":
+#     app = factory.create_app(celery=app.celery)
+     print("inside myproject file")
+     app.run(host='0.0.0.0')

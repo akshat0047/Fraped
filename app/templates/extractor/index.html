@@ -6,7 +6,7 @@
 <div class="row text-center">
 <div class="offset-2 offset-md-4 offset-lg-4 col-8 col-md-4 col-lg-4">
 <div id="arche_form">
-<form id="scrapef" action = "http://127.0.01:9000/extract/" method ="POST">
+<form id="scrapef" action = "http://165.22.216.65:5000/extract/" method ="POST">
     <legend><h4>Frape Here !</h4></legend>
     
     {{ form.hidden_tag() }}
@@ -28,7 +28,7 @@
 <input id="scrape" type=submit value="Run Scraper" class='btn btn-primary btn-block'>
 
 </form>
-<form id="show_results" action="http://127.0.0.1:9000/extract/show_results" method="POST">
+<form id="show_results" action="http://165.22.216.65:5000/extract/show_results" method="GET">
 </form>
 </div>
 </div>

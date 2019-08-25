@@ -15,20 +15,21 @@ $(document).ready(function() {
 
   $("#scrapef").on("submit", function(e) {
     console.log("running ajax");
+    $("#loader").css("display", "block");
+    $("#scrape").css("display", "none");
     $.ajax({
       type: $(this).attr("method"),
       url: $(this).attr("action"),
       data: $("#scrapef").serialize(),
       success: function(res) {
-        $("#loader").css("display", "block");
-        $("#scrape").css("display", "none");
         if (res.statusajax == "scraping") {
+          console.log(res);
           console.log("ajax 2 fired");
-          var results = setInterval(function() {
+            var results = setInterval(function() {
             $.ajax({
               type: "POST",
-              url: "http://127.0.0.1:9000/extract/results",
-              async: true,
+              url: "http://165.22.216.65:5000/extract/results",
+              cache:false,
               success: function(response) {
                 console.log(response);
                 if (response.res == "finished") {
@@ -40,7 +41,7 @@ $(document).ready(function() {
                 console.log(err);
               }
             });
-          }, 2000);
+          }, 4000);
         }
       },
       error: function(err) {

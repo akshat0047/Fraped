@@ -22,7 +22,7 @@ class HeadersDSpider(scrapy.Spider):
         custom_settings = {
             'DEPTH_LIMIT': kwargs.get('meta')['depth']
         }
-
+        
     def parse(self, response):
         # empty for getting everything, check different options on documentation
         h1 = response.xpath('//h1/text()').extract()
@@ -38,7 +38,7 @@ class HeadersDSpider(scrapy.Spider):
             if type(x) is not str:
                 for i in range(0, len(x)):
                     x[i] = x[i].strip()
-
+        print(data)
         self.data_list.append(data)
 
         le = LinkExtractor(allow_domains=(

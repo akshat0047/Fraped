@@ -8,7 +8,6 @@ from app.extractor.spiders.urls import UrlsSpider
 from app.extractor.spiders.urlsd import UrlsDSpider
 from flask_cors import CORS
 import requests, json, os, time, crochet, subprocess
-import celery
 
 # Create some test data for our catalog in the form of a list of dictionaries.
 #extract = Blueprint('extract', __name__, url_prefix='/extract')
@@ -21,7 +20,7 @@ scrape_complete = False
 extractor = Blueprint('extract', __name__, url_prefix='/extract')
 CORS(extractor)
 
-@celery.task()
+
 def crawl_for_spiders(spidy, url, data_list, depth=0):
     """
     Scrape for quotes
@@ -29,25 +28,18 @@ def crawl_for_spiders(spidy, url, data_list, depth=0):
     print("Requested Spiders")
     eventual = crawl_runner.crawl(spidy, meta={"url": url, "depth": depth}, data_list=data_list)
     eventual.addCallback(finished_scrape)
-    f = open("file.txt","w")
-    f.write("1")
-    f.close()
            
 @extractor.route('/results', methods=['POST','GET'])
 def get_results():
     """
     Get the results only if a spider has results
-    
+    """
     global scrape_in_progress
     global scrape_complete
     if scrape_complete:
         return {"res": "finished"}
     return {"scrape in progress":scrape_in_progress}
-    """
-    f = open("file.txt","r")
-    contents = f.read()
-    f.close()
-    return {"result":contents}
+
 
 @extractor.route('/show_results', methods=['POST','GET'])
 def show_results():
@@ -82,7 +74,6 @@ def home():
     data_list = []
     scrape_in_progress = False
     scrape_complete = False
-    crochet.setup()
 
     form = ApiForm(request.form)
     if request.method == 'POST':
@@ -94,16 +85,12 @@ def home():
         if choice == 'sp':
           
              if not scrape_in_progress:
-            #  scrape_in_progress = True
+               scrape_in_progress = True
                print("Crawling..")
-               f = open("file.txt","w")
-               f.write("0")
-               f.close()
-               print("file made")
                crawl_for_spiders(HeadersSpider, link, data_list)
-              # while not scrape_complete:
-              #    print("Waiting... %s" % scrape_complete)
-              #    time.sleep(0.10)
+               while not scrape_complete:
+                  print("Waiting... %s" % scrape_complete)
+                  time.sleep(0.10)
                return {'statusajax': 'scraping','scrape progress':scrape_in_progress}
              elif scrape_complete:
                return {'statusajax': 'scrape complete'}
